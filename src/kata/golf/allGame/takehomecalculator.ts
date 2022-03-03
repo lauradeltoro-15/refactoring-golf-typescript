@@ -1,12 +1,18 @@
 import { Incalculable } from "./incalculable";
 
-export class Pair {
+export class Money {
   public value: number;
   public currency: string;
 
   constructor(value: number, currency: string) {
     this.value = value;
     this.currency = currency;
+  }
+  plus(next: Money) {
+    if (next.currency != this.currency) {
+      throw new Incalculable();
+    }
+    return new Money(this.value + next.value, next.currency);
   }
 }
 
@@ -17,32 +23,19 @@ export class Takehomecalculator {
     this.percent = percent;
   }
 
-  netAmount(
-    first: Pair,
-    ...rest: Pair[]
-  ): Pair {
-    const pairs: Array<Pair> = Array.from(rest);
-    let total: Pair = first;
+  netAmount(first: Money, ...rest: Money[]): Money {
+    const monies: Array<Money> = Array.from(rest);
+    let total: Money = first;
 
-    for (let next of pairs) {
-      if (next.currency != total.currency) {
-        throw new Incalculable();
-      }
+    for (let next of monies) {
+      total = total.plus(next);
     }
-
-    for (const next of pairs) {
-      total = new Pair(total.value + next.value, next.currency);
-    }
-
     const amount: number = total.value * (this.percent / 100.0);
-    const tax: Pair = new Pair(
-      Math.trunc(amount),
-      first.currency
-    );
+    const tax: Money = new Money(Math.trunc(amount), first.currency);
 
     if (total.currency != tax.currency) {
       throw new Incalculable();
     }
-    return new Pair(total.value - tax.value, first.currency);
+    return new Money(total.value - tax.value, first.currency);
   }
 }
