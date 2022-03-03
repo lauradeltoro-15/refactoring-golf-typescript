@@ -10,11 +10,11 @@ export class Money {
         this.currency = currency;
     }
 
-    plus(next: Money): Money {
-        if(next.currency !== this.currency){
+    plus(other: Money): Money {
+        if(other.currency !== this.currency){
             throw new Incalculable();
         }
-        return new Money(this.value + next.value, next.currency);
+        return new Money(this.value + other.value, other.currency);
     }
 }
 
