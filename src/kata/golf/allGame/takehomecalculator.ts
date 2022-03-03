@@ -1,27 +1,22 @@
+import { taxRate, TaxRate } from "./TaxRate";
 import { Incalculable } from "./incalculable";
 import { money, Money } from "./Money";
 
 export class Takehomecalculator {
-  private readonly percent: number;
+  private readonly taxRate: TaxRate;
 
   constructor(percent: number) {
-    this.percent = percent;
+    this.taxRate = taxRate(percent)
   }
 
   netAmount(first: Money, ...rest: Money[]): Money {
-    
     const monies: Array<Money> = Array.from(rest);
     let total: Money = first;
 
     for (const next of monies) {
       total = total.plus(next);
     }
-    const amount: number = total.value * (this.percent / 100.0);
-    const tax: Money = money(Math.trunc(amount), first.currency);
-
-    if (total.currency != tax.currency) {
-      throw new Incalculable();
-    }
-    return money(total.value - tax.value, first.currency);
+    const tax: Money = this.taxRate.apply(total);
+    return total.minus(tax);
   }
 }
