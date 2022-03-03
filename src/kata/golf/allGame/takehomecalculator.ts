@@ -1,6 +1,5 @@
 import { taxRate, TaxRate } from "./TaxRate";
-import { Incalculable } from "./incalculable";
-import { money, Money } from "./Money";
+import { Money } from "./Money";
 
 export class Takehomecalculator {
   private readonly taxRate: TaxRate;
